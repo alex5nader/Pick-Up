@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+
+  "id": "${modId}",
+  "version": "${modVersion}",
+  "environment": "*",
+
+  "name": "${modPrettyName}",
+  "description": "",
+  "icon": "assets/${modId}/icon.png",
+
+  "authors": [ "noobstar" ],
+  "contributors": [],
+  "contact": {
+    "sources": "https://github.com/alex5nader/${modName}",
+    "issues": "https://github.com/alex5nader/${modName}/issues",
+    "email": "${modId}@alexnader.dev",
+    "discord": "noob2star#7501"
+  },
+
+  "license": "LGPL-3.0-or-later",
+
+  "entrypoints": {
+    "main": [
+      "dev.alexnader.fabric_template.common.FabricTemplate"
+    ],
+    "client": [
+      "dev.alexnader.fabric_template.client.FabricTemplateClient"
+    ]
+  },
+  "mixins": [
+    "mixins.${modId}.json"
+  ],
+
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "${fapiVersion}",
+    "minecraft": ["${mcVersions}"]
+  }
+}
