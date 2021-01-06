@@ -5,10 +5,13 @@ import dev.alexnader.pick_up.mixinterface.BlockBreakRestrictable;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 
 public class PickUp implements ModInitializer {
     public static PickUpMeta META;
@@ -20,7 +23,8 @@ public class PickUp implements ModInitializer {
         ITEMS = new PickUpItems();
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
-            BlockState state = world.getBlockState(hit.getBlockPos());
+            BlockPos pos = hit.getBlockPos();
+            BlockState state = world.getBlockState(pos);
             // picking up every block would allow moving bedrock, etc
             if (!state.getBlock().hasBlockEntity()) {
                 return ActionResult.PASS;
@@ -32,7 +36,12 @@ public class PickUp implements ModInitializer {
             if (!player.isSneaking()) {
                 return ActionResult.PASS;
             }
-            if (!((BlockBreakRestrictable) player).canBreakBlock(world, hit.getBlockPos())) {
+            if (!((BlockBreakRestrictable) player).canBreakBlock(world, pos)) {
+                return ActionResult.PASS;
+            }
+
+            BlockEntity entity = world.getBlockEntity(pos);
+            if (entity instanceof LockableContainerBlockEntity && !((LockableContainerBlockEntity) entity).checkUnlocked(player)) {
                 return ActionResult.PASS;
             }
 
@@ -45,9 +54,9 @@ public class PickUp implements ModInitializer {
             }
 
             //noinspection ConstantConditions // should not be null
-            player.setStackInHand(Hand.MAIN_HAND, HeldBlockItem.stackHolding(state, world.getBlockEntity(hit.getBlockPos())));
-            world.removeBlockEntity(hit.getBlockPos());
-            world.removeBlock(hit.getBlockPos(), true);
+            player.setStackInHand(Hand.MAIN_HAND, HeldBlockItem.stackHolding(state, entity));
+            world.removeBlockEntity(pos);
+            world.removeBlock(pos, true);
 
             System.out.println("pick up!");
             return ActionResult.CONSUME;
