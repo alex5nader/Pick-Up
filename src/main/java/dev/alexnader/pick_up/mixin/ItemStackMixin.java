@@ -20,7 +20,7 @@ public abstract class ItemStackMixin {
     @Inject(method = "getName", at = @At("HEAD"), cancellable = true)
     void customHeldName(CallbackInfoReturnable<Text> cir) {
         if (getItem() == ITEMS.HELD_BLOCK_ITEM.value) {
-            cir.setReturnValue(new TranslatableText("item.held_block.holding").append(new TranslatableText(HeldBlockItem.getState((ItemStack) (Object) this).getBlock().getTranslationKey())));
+            cir.setReturnValue(new TranslatableText("pick_up.holding").append(new TranslatableText(HeldBlockItem.getState((ItemStack) (Object) this).getBlock().getTranslationKey())));
         }
     }
 }
