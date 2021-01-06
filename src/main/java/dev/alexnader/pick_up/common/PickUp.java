@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.EntityType;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.util.ActionResult;
@@ -31,6 +32,9 @@ public class PickUp implements ModInitializer {
                 return ActionResult.PASS;
             }
             if (!player.isSneaking()) {
+                return ActionResult.PASS;
+            }
+            if (entity.getType() == EntityType.PLAYER) {
                 return ActionResult.PASS;
             }
 
