@@ -36,9 +36,9 @@ object Fabric {
     val api = Dependency("net.fabricmc.fabric-api", "fabric-api", "0.29.3+1.16")
 }
 
-object FabricTemplate : Dependency("dev.alexnader", "Fabric-Template", "0") {
-    const val modId = "fabric_template"
-    const val prettyName = "Fabric Template"
+object PickUp : Dependency("dev.alexnader", "Pick-Up", "0") {
+    const val modId = "pick_up"
+    const val prettyName = "Pick Up"
 
     const val modrinthId = "abcdef"
     const val curseforgeId = "abcdef"

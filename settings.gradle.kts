@@ -1,4 +1,4 @@
-rootProject.name = "Fabric-Template"
+rootProject.name = "Pick-Up"
 
 pluginManagement {
     repositories {

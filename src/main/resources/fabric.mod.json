@@ -22,10 +22,10 @@
 
   "entrypoints": {
     "main": [
-      "dev.alexnader.fabric_template.common.FabricTemplate"
+      "dev.alexnader.pick_up.common.PickUp"
     ],
     "client": [
-      "dev.alexnader.fabric_template.client.FabricTemplateClient"
+      "dev.alexnader.pick_up.client.PickUpClient"
     ]
   },
   "mixins": [

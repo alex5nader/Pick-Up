@@ -1,4 +1,4 @@
-package dev.alexnader.fabric_template.common;
+package dev.alexnader.pick_up.common;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
