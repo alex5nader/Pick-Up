@@ -2,12 +2,15 @@ package dev.alexnader.pick_up.common.item;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -27,6 +30,34 @@ public class HeldEntityItem extends Item {
         return stack;
     }
 
+    public static Entity getEntity(ItemStack stack, World world) {
+        CompoundTag entityTag = stack.getSubTag("entity");
+        //noinspection ConstantConditions,OptionalGetWithoutIsPresent // .entity is required // invalid data should fail
+        return EntityType.getEntityFromTag(entityTag, world).get();
+    }
+
+    @Override
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        World world = entity.world;
+        Entity held = getEntity(stack, world);
+
+        Entity vehicle = entity;
+        while (vehicle.getPrimaryPassenger() != null) {
+            vehicle = vehicle.getPrimaryPassenger();
+        }
+
+        if (!vehicle.hasPassengers() && held.startRiding(vehicle, true)) {
+            world.spawnEntity(held);
+
+            //TODO: handle this?
+            user.getStackInHand(hand).setCount(0);
+
+            return ActionResult.success(world.isClient);
+        }
+
+        return super.useOnEntity(stack, user, entity, hand);
+    }
+
     @Override
     public ActionResult useOnBlock(ItemUsageContext usage) {
         World world = usage.getWorld();
@@ -34,11 +65,10 @@ public class HeldEntityItem extends Item {
         ItemPlacementContext placement = new ItemPlacementContext(usage);
 
         if (placement.canPlace()) {
-            CompoundTag entityTag = stack.getSubTag("entity");
             Vec3d pos = placement.getHitPos();
-            System.out.println(pos);
-            //noinspection ConstantConditions,OptionalGetWithoutIsPresent // .entity is required // invalid data should fail
-            Entity entity = EntityType.getEntityFromTag(entityTag, world).get();
+
+            Entity entity = getEntity(stack, world);
+
             entity.updatePosition(pos.getX(), pos.getY(), pos.getZ());
             world.spawnEntity(entity);
 
