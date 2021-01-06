@@ -65,7 +65,7 @@ public class HeldBlockItem extends Item {
 
             return result;
         }
-        return ActionResult.SUCCESS;
+        return super.useOnBlock(usage);
     }
 
     @Override
