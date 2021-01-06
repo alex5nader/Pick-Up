@@ -9,6 +9,9 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -47,5 +50,43 @@ public class PickUpRendering {
         if (ber != null) {
             ber.render(entity, MinecraftClient.getInstance().getTickDelta(), matrices, vertexConsumer, light, overlay);
         }
+    }
+
+    public static void renderHeldEntity(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumer, int light, int overlay) {
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        CompoundTag tag = stack.getOrCreateTag();
+        //noinspection OptionalGetWithoutIsPresent // should fail if this tag is invalid
+        Entity entity = EntityType.getEntityFromTag(tag.getCompound("entity"), client.world).get();
+        entity.prevYaw = 0;
+        entity.yaw = 0;
+        entity.prevPitch = 0;
+        entity.pitch = 0;
+        entity.resetPosition(0, 0, 0);
+        if (entity instanceof LivingEntity) {
+            LivingEntity living = (LivingEntity) entity;
+            living.prevBodyYaw = 0;
+            living.bodyYaw = 0;
+            living.prevHeadYaw = 0;
+            living.headYaw = 0;
+        }
+
+        matrices.push();
+
+        if (mode == ModelTransformation.Mode.GUI) {
+            matrices.translate(0.5, 0, 0);
+        }
+
+        if (mode.isFirstPerson()) {
+            matrices.translate(0, -entity.getBoundingBox().getYLength() / 2f + 0.25, 0);
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(8));
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90));
+        }
+
+        client.getEntityRenderDispatcher()
+            .getRenderer(entity)
+            .render(entity, 0, client.getTickDelta(), matrices, vertexConsumer, light);
+
+        matrices.pop();
     }
 }

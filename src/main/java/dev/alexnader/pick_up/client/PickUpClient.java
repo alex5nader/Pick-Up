@@ -9,5 +9,6 @@ public class PickUpClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         BuiltinItemRendererRegistry.INSTANCE.register(ITEMS.HELD_BLOCK_ITEM.value, PickUpRendering::renderHeldBlock);
+        BuiltinItemRendererRegistry.INSTANCE.register(ITEMS.HELD_ENTITY_ITEM.value, PickUpRendering::renderHeldEntity);
     }
 }
