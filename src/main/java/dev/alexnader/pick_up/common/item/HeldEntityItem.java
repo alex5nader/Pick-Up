@@ -48,9 +48,9 @@ public class HeldEntityItem extends Item implements HeldItem {
         }
 
         if (!vehicle.hasPassengers() && held.startRiding(vehicle, true)) {
+            entity.updatePassengerPosition(held);
             world.spawnEntity(held);
 
-            //TODO: handle this?
             user.getStackInHand(hand).setCount(0);
 
             return ActionResult.success(world.isClient);
