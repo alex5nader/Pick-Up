@@ -1,7 +1,6 @@
 package dev.alexnader.pick_up.mixin;
 
-import dev.alexnader.pick_up.common.item.HeldBlockItem;
-import net.minecraft.entity.EntityType;
+import dev.alexnader.pick_up.common.item.HeldItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -25,10 +24,12 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "getName", at = @At("HEAD"), cancellable = true)
     void customHeldName(CallbackInfoReturnable<Text> cir) {
-        if (getItem() == ITEMS.HELD_BLOCK_ITEM.value) {
-            cir.setReturnValue(new TranslatableText("pick_up.holding").append(new TranslatableText(HeldBlockItem.getState((ItemStack) (Object) this).getBlock().getTranslationKey())));
-        } else if (getItem() == ITEMS.HELD_ENTITY_ITEM.value) {
-            cir.setReturnValue(new TranslatableText("pick_up.holding").append(new TranslatableText(EntityType.fromTag(getSubTag("entity")).get().getTranslationKey())));
+        Item item = getItem();
+        if (ITEMS.isHeldItem(item)) {
+            cir.setReturnValue(
+                new TranslatableText("pick_up.holding")
+                .append(new TranslatableText(((HeldItem) item).getHeldTranslationKey((ItemStack) (Object) this)))
+            );
         }
     }
 }

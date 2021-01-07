@@ -15,8 +15,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
+import static dev.alexnader.pick_up.common.PickUp.META;
 
-public class HeldEntityItem extends Item {
+public class HeldEntityItem extends Item implements HeldItem {
     public HeldEntityItem(Settings settings) {
         super(settings);
     }
@@ -78,5 +79,16 @@ public class HeldEntityItem extends Item {
             return ActionResult.success(world.isClient);
         }
         return super.useOnBlock(usage);
+    }
+
+    @Override
+    public String getHeldTranslationKey(ItemStack stack) {
+        CompoundTag entityTag = stack.getSubTag("entity");
+        if (entityTag == null) {
+            return META.INVALID_KEY;
+        }
+        return EntityType.fromTag(entityTag)
+            .map(EntityType::getTranslationKey)
+            .orElse(META.INVALID_KEY);
     }
 }

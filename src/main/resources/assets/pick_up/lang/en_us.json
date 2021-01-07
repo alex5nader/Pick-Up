@@ -1,3 +1,4 @@
 {
-  "pick_up.holding": "Holding %s"
+  "pick_up.holding": "Holding %s",
+  "pick_up.invalid": "Invalid Held Item"
 }

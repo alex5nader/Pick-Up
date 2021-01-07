@@ -11,12 +11,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
+import static dev.alexnader.pick_up.common.PickUp.META;
 
-public class HeldBlockItem extends Item {
+public class HeldBlockItem extends Item implements HeldItem {
     public HeldBlockItem(Settings settings) {
         super(settings);
     }
@@ -71,5 +74,18 @@ public class HeldBlockItem extends Item {
     @Override
     public Text getName() {
         return super.getName();
+    }
+
+    @Override
+    public String getHeldTranslationKey(ItemStack stack) {
+        CompoundTag stateTag = stack.getSubTag("state");
+        if (stateTag == null) {
+            return META.INVALID_KEY;
+        }
+        String name = stateTag.getString("Name");
+        if ("".equals(name)) {
+            return META.INVALID_KEY;
+        }
+        return Registry.BLOCK.get(new Identifier(name)).getTranslationKey();
     }
 }
