@@ -23,6 +23,19 @@ public class PickUp implements ModInitializer {
         ITEMS = new PickUpItems();
         COMMANDS = new PickUpCommands();
 
+        registerInteractionBlockers();
+
+        //noinspection CodeBlock2Expr // more readable with explicit block
+        CommandRegistrationCallback.EVENT.register((dispatcher, isDedi) -> {
+            dispatcher.register(COMMANDS.DISCARD);
+        });
+
+        UseEntityCallback.EVENT.register(PickUpPickingUp::tryPickUpEntity);
+        UseBlockCallback.EVENT.register(PickUpPickingUp::tryPickUpBlock);
+    }
+
+    private void registerInteractionBlockers() {
+
         DropSelectedItemCallback.EVENT.register((player, stack, dropEntireStack) -> {
             if (ITEMS.isHeldItem(stack.getItem())) {
                 return ActionResult.FAIL;
@@ -54,14 +67,6 @@ public class PickUp implements ModInitializer {
                 return ActionResult.PASS;
             }
         });
-
-        //noinspection CodeBlock2Expr // more readable with explicit block
-        CommandRegistrationCallback.EVENT.register((dispatcher, isDedi) -> {
-            dispatcher.register(COMMANDS.DISCARD);
-        });
-
-        UseEntityCallback.EVENT.register(PickUpPickingUp::tryPickUpEntity);
-        UseBlockCallback.EVENT.register(PickUpPickingUp::tryPickUpBlock);
 
         // prevent swinging hand for block GUIs
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
