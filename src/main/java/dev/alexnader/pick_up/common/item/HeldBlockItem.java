@@ -3,7 +3,6 @@ package dev.alexnader.pick_up.common.item;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -19,7 +18,7 @@ import net.minecraft.world.World;
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
 import static dev.alexnader.pick_up.common.PickUp.META;
 
-public class HeldBlockItem extends Item implements HeldItem {
+public class HeldBlockItem extends HeldItem {
     public HeldBlockItem(Settings settings) {
         super(settings);
     }

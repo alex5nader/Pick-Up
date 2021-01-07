@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -17,7 +16,7 @@ import net.minecraft.world.World;
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
 import static dev.alexnader.pick_up.common.PickUp.META;
 
-public class HeldEntityItem extends Item implements HeldItem {
+public class HeldEntityItem extends HeldItem {
     public HeldEntityItem(Settings settings) {
         super(settings);
     }
