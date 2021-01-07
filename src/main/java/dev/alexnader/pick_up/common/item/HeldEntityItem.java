@@ -61,6 +61,7 @@ public class HeldEntityItem extends Item implements HeldItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext usage) {
+        //TODO entities can spawn in walls when used on side of block
         World world = usage.getWorld();
         ItemStack stack = usage.getStack();
         ItemPlacementContext placement = new ItemPlacementContext(usage);

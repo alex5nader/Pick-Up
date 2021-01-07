@@ -2,9 +2,17 @@
   "required": true,
   "package": "dev.alexnader.pick_up.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [ "BlockEntityAccess", "ItemStackMixin", "server.ServerPlayerEntityMixin" ],
+  "mixins": [
+    "BlockEntityAccess",
+    "ItemStackMixin",
+    "PlayerEntityMixin",
+    "server.ServerPlayerEntityMixin",
+    "server.ServerPlayNetworkHandlerMixin"
+  ],
   "client": [
-    "client.AbstractClientPlayerEntityMixin"
+    "client.AbstractClientPlayerEntityMixin",
+    "client.ClientPlayerEntityMixin",
+    "client.MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1
