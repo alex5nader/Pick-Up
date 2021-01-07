@@ -69,7 +69,6 @@ public class PickUp implements ModInitializer {
     }
 
     private void registerInteractionBlockers() {
-
         DropSelectedItemCallback.EVENT.register((player, stack, dropEntireStack) -> {
             if (ITEMS.isHeldItem(stack.getItem())) {
                 return ActionResult.FAIL;

@@ -2,6 +2,7 @@ package dev.alexnader.pick_up.common.item;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -39,6 +40,7 @@ public class HeldBlockItem extends HeldItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext usage) {
+        System.out.println("useOnBlock");
         World world = usage.getWorld();
         ItemStack stack = usage.getStack();
         ItemPlacementContext placement = new ItemPlacementContext(usage);
@@ -62,8 +64,10 @@ public class HeldBlockItem extends HeldItem {
                 entity.fromTag(world.getBlockState(pos), entityTag);
             }
 
-            //TODO: handle this?
-            usage.getPlayer().getStackInHand(usage.getHand()).setCount(0);
+            PlayerEntity user = usage.getPlayer();
+            if (user != null) {
+                user.inventory.removeStack(user.inventory.selectedSlot);
+            }
 
             return result;
         }

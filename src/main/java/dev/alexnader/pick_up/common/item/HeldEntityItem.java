@@ -50,7 +50,7 @@ public class HeldEntityItem extends HeldItem {
             entity.updatePassengerPosition(held);
             world.spawnEntity(held);
 
-            user.getStackInHand(hand).setCount(0);
+            user.inventory.removeStack(user.inventory.selectedSlot);
 
             return ActionResult.success(world.isClient);
         }
@@ -73,8 +73,10 @@ public class HeldEntityItem extends HeldItem {
             entity.updatePosition(pos.getX(), pos.getY(), pos.getZ());
             world.spawnEntity(entity);
 
-            //TODO: handle this?
-            usage.getPlayer().getStackInHand(usage.getHand()).setCount(0);
+            PlayerEntity user = usage.getPlayer();
+            if (user != null) {
+                user.inventory.removeStack(user.inventory.selectedSlot);
+            }
 
             return ActionResult.success(world.isClient);
         }
