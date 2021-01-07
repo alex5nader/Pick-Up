@@ -1,12 +1,14 @@
 package dev.alexnader.pick_up.mixin.client;
 
 import dev.alexnader.pick_up.common.event.OpenScreenCallback;
+import dev.alexnader.pick_up.common.event.SelectSlotCallback;
 import dev.alexnader.pick_up.common.event.SwapHandsCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.tutorial.TutorialManager;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.Packet;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -26,9 +28,6 @@ import javax.annotation.Nullable;
 public class MinecraftClientMixin {
     @Shadow @Nullable public ClientPlayerEntity player;
 
-    @Unique
-    private ActionResult openScreenCallbackResult = ActionResult.PASS;
-
     @Redirect(
         method = "handleInputEvents",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V", ordinal = 0),
@@ -42,6 +41,23 @@ public class MinecraftClientMixin {
             clientPlayNetworkHandler.sendPacket(packet);
         }
     }
+
+    @Redirect(
+        method = "handleInputEvents",
+        at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I", ordinal = 0),
+        slice = @Slice(from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;keysHotbar:[Lnet/minecraft/client/options/KeyBinding;"))
+    )
+    void fireSelectSlotCallback(PlayerInventory inventory, int value) {
+        ActionResult result = SelectSlotCallback.EVENT.invoker().selectSlot(inventory.player, value);
+
+        if (result == ActionResult.PASS) {
+            inventory.selectedSlot = value;
+        }
+    }
+
+//region OpenScreenCallback
+    @Unique
+    private ActionResult openScreenCallbackResult = ActionResult.PASS;
 
     @Inject(
         method = "handleInputEvents",
@@ -84,4 +100,5 @@ public class MinecraftClientMixin {
             client.openScreen(screen);
         }
     }
+//endregion OpenScreenCallback
 }

@@ -2,6 +2,7 @@ package dev.alexnader.pick_up.common;
 
 import dev.alexnader.pick_up.common.event.DropSelectedItemCallback;
 import dev.alexnader.pick_up.common.event.OpenScreenCallback;
+import dev.alexnader.pick_up.common.event.SelectSlotCallback;
 import dev.alexnader.pick_up.common.event.SwapHandsCallback;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -40,6 +41,14 @@ public class PickUp implements ModInitializer {
 
         SwapHandsCallback.EVENT.register((player, mainHandStack, offHandStack) -> {
             if (ITEMS.isHeldItem(mainHandStack.getItem())) {
+                return ActionResult.FAIL;
+            } else {
+                return ActionResult.PASS;
+            }
+        });
+
+        SelectSlotCallback.EVENT.register((player, slot) -> {
+            if (ITEMS.isHeldItem(player.getStackInHand(Hand.MAIN_HAND).getItem())) {
                 return ActionResult.FAIL;
             } else {
                 return ActionResult.PASS;

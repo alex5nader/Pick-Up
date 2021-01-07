@@ -12,7 +12,8 @@
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.ClientPlayerEntityMixin",
-    "client.MinecraftClientMixin"
+    "client.MinecraftClientMixin",
+    "client.PlayerInventoryClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1
