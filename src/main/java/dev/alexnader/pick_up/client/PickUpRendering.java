@@ -72,6 +72,8 @@ public class PickUpRendering {
             living.bodyYaw = 0;
             living.prevHeadYaw = 0;
             living.headYaw = 0;
+            living.hurtTime = 0;
+            living.deathTime = 0;
         }
 
         matrices.push();
