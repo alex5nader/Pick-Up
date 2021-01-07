@@ -1,4 +1,6 @@
 {
   "pick_up.holding": "Holding %s",
-  "pick_up.invalid": "Invalid Held Item"
+  "pick_up.invalid": "Invalid Held Item",
+  "pick_up.command.discard.not_holding": "You're not holding anything!",
+  "pick_up.command.discard.success": "Discarded %s."
 }
