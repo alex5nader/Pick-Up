@@ -2,7 +2,7 @@
   "required": true,
   "package": "dev.alexnader.pick_up.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [ "ItemStackMixin", "server.ServerPlayerEntityMixin" ],
+  "mixins": [ "BlockEntityAccess", "ItemStackMixin", "server.ServerPlayerEntityMixin" ],
   "client": [
     "client.AbstractClientPlayerEntityMixin"
   ],

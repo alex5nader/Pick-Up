@@ -1,5 +1,6 @@
 package dev.alexnader.pick_up.client;
 
+import dev.alexnader.pick_up.mixin.BlockEntityAccess;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -26,6 +27,8 @@ public class PickUpRendering {
         //noinspection OptionalGetWithoutIsPresent // should fail if this tag is missing or invalid
         BlockState state = BlockState.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("state")).get().left().get().getFirst();
         BlockEntity entity = BlockEntity.createFromTag(state, tag.getCompound("entity"));
+        //noinspection ConstantConditions // should always be a BE
+        ((BlockEntityAccess) entity).setCachedState(state);
 
         matrices.push();
 
