@@ -1,5 +1,6 @@
 package dev.alexnader.pick_up.common;
 
+import dev.alexnader.pick_up.api.PickUpDenylist;
 import dev.alexnader.pick_up.common.item.HeldBlockItem;
 import dev.alexnader.pick_up.common.item.HeldEntityItem;
 import dev.alexnader.pick_up.mixinterface.BlockBreakRestrictable;
@@ -8,7 +9,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
@@ -22,14 +22,15 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class PickUpPickingUp {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted") // inverted name is harder to read
+    private static boolean canPickUp(PlayerEntity player) {
+        return player.getStackInHand(Hand.MAIN_HAND).isEmpty()
+            && player.getStackInHand(Hand.OFF_HAND).isEmpty()
+            && player.isSneaking();
+    }
+
     public static ActionResult tryPickUpEntity(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hit) {
-        if (!player.getStackInHand(Hand.MAIN_HAND).isEmpty() || !player.getStackInHand(Hand.OFF_HAND).isEmpty()) {
-            return ActionResult.PASS;
-        }
-        if (!player.isSneaking()) {
-            return ActionResult.PASS;
-        }
-        if (entity.getType() == EntityType.PLAYER) {
+        if (!canPickUp(player) || PickUpDenylist.INSTANCE.isDenied(entity)) {
             return ActionResult.PASS;
         }
 
@@ -50,15 +51,12 @@ public class PickUpPickingUp {
     public static ActionResult tryPickUpBlock(PlayerEntity player, World world, Hand hand, BlockHitResult hit) {
         BlockPos pos = hit.getBlockPos();
         BlockState state = world.getBlockState(pos);
-        // picking up every block would allow moving bedrock, etc
+        // picking up every block would allow moving bedrock, etc // TODO configurable?
         if (!state.getBlock().hasBlockEntity()) {
             return ActionResult.PASS;
         }
 
-        if (!player.getStackInHand(Hand.MAIN_HAND).isEmpty() || !player.getStackInHand(Hand.OFF_HAND).isEmpty()) {
-            return ActionResult.PASS;
-        }
-        if (!player.isSneaking()) {
+        if (!canPickUp(player) || PickUpDenylist.INSTANCE.isDenied(state)) {
             return ActionResult.PASS;
         }
         if (!((BlockBreakRestrictable) player).canBreakBlock(world, pos)) {
