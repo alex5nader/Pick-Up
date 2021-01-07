@@ -1,9 +1,11 @@
 package dev.alexnader.pick_up.client;
 
 import dev.alexnader.pick_up.mixin.BlockEntityAccess;
+import net.fabricmc.fabric.impl.client.indigo.renderer.render.BlockRenderContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -16,18 +18,26 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
 public class PickUpRendering {
+    private static final ThreadLocal<BlockRenderContext> CONTEXTS = ThreadLocal.withInitial(BlockRenderContext::new);
+
     public static void renderHeldBlock(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumer, int light, int overlay) {
         MinecraftClient client = MinecraftClient.getInstance();
 
         CompoundTag tag = stack.getOrCreateTag();
         //noinspection OptionalGetWithoutIsPresent // should fail if this tag is missing or invalid
         BlockState state = BlockState.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("state")).get().left().get().getFirst();
+
         BlockEntity entity = BlockEntity.createFromTag(state, tag.getCompound("entity"));
         //noinspection ConstantConditions // should always be a BE
+        BlockPos pos = entity.getPos();
+        entity.setLocation(client.world, pos);
+
         ((BlockEntityAccess) entity).setCachedState(state);
 
         matrices.push();
@@ -42,7 +52,18 @@ public class PickUpRendering {
             matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(8));
         }
 
-        client.getBlockRenderManager().renderBlockAsEntity(state, matrices, vertexConsumer, light, overlay);
+        CONTEXTS.get().render(
+            new BlockEntityDelegateWorld(client.world, pos, state, entity),
+            client.getBlockRenderManager().getModel(state),
+            state,
+            pos,
+            matrices,
+            vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state, false)),
+            new Random(),
+            0,
+            overlay
+        );
+
         renderBer(entity, matrices, vertexConsumer, light, overlay);
 
         matrices.pop();
