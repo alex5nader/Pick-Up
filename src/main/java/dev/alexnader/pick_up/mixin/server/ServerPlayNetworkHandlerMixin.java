@@ -14,15 +14,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin {
-    @Shadow public ServerPlayerEntity player;
+    @Shadow
+    public ServerPlayerEntity player;
 
     @Inject(
         method = "onPlayerAction",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;", ordinal = 0),
+        at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/server/network/ServerPlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;",
+            ordinal = 0),
         cancellable = true
     )
     void fireSwapHandsCallback(PlayerActionC2SPacket packet, CallbackInfo ci) {
-        ActionResult result = SwapHandsCallback.EVENT.invoker().swap(player, player.getStackInHand(Hand.MAIN_HAND), player.getStackInHand(Hand.OFF_HAND));
+        ActionResult result = SwapHandsCallback.EVENT.invoker()
+            .swap(player, player.getStackInHand(Hand.MAIN_HAND), player.getStackInHand(Hand.OFF_HAND));
 
         if (result != ActionResult.PASS) {
             ci.cancel();

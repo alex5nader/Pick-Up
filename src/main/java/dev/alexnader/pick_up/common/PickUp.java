@@ -31,17 +31,15 @@ public class PickUp implements ModInitializer {
         ITEMS = new PickUpItems();
         COMMANDS = new PickUpCommands();
 
-        for (PickUpEntrypoint entrypoint : FabricLoader.getInstance().getEntrypoints(META.NAMESPACE, PickUpEntrypoint.class)) {
+        for (PickUpEntrypoint entrypoint : FabricLoader.getInstance()
+            .getEntrypoints(META.NAMESPACE, PickUpEntrypoint.class)) {
             entrypoint.doPickUpRelatedThings();
         }
 
         initDenylist();
         registerInteractionBlockers();
 
-        //noinspection CodeBlock2Expr // more readable with explicit block
-        CommandRegistrationCallback.EVENT.register((dispatcher, isDedi) -> {
-            dispatcher.register(COMMANDS.DISCARD);
-        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, isDedi) -> dispatcher.register(COMMANDS.DISCARD));
 
         UseEntityCallback.EVENT.register(PickUpPickingUp::tryPickUpEntity);
         UseBlockCallback.EVENT.register(PickUpPickingUp::tryPickUpBlock);

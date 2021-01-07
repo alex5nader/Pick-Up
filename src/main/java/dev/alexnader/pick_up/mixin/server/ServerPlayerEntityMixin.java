@@ -21,7 +21,8 @@ import java.util.OptionalInt;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements BlockBreakRestrictable {
-    @Shadow @Final public ServerPlayerInteractionManager interactionManager;
+    @Shadow
+    public @Final ServerPlayerInteractionManager interactionManager;
 
     private ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
@@ -35,7 +36,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Bl
 
     @Inject(
         method = "openHandledScreen",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/NamedScreenHandlerFactory;createMenu(ILnet/minecraft/entity/player/PlayerInventory;Lnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/screen/ScreenHandler;"),
+        at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/screen/NamedScreenHandlerFactory;createMenu(ILnet/minecraft/entity/player/PlayerInventory;Lnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/screen/ScreenHandler;"),
         cancellable = true
     )
     void fireOpenScreenCallback(NamedScreenHandlerFactory factory, CallbackInfoReturnable<OptionalInt> cir) {

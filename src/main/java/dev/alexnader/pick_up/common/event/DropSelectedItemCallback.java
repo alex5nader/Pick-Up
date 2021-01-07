@@ -7,7 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 
 public interface DropSelectedItemCallback {
-    Event<DropSelectedItemCallback> EVENT = EventFactory.createArrayBacked(DropSelectedItemCallback.class,
+    Event<DropSelectedItemCallback> EVENT = EventFactory.createArrayBacked(
+        DropSelectedItemCallback.class,
         (listeners) -> (player, stack, dropEntireStack) -> {
             for (DropSelectedItemCallback listener : listeners) {
                 ActionResult result = listener.drop(player, stack, dropEntireStack);

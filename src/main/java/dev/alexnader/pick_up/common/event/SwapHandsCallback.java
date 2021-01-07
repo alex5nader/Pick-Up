@@ -7,7 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 
 public interface SwapHandsCallback {
-    Event<SwapHandsCallback> EVENT = EventFactory.createArrayBacked(SwapHandsCallback.class,
+    Event<SwapHandsCallback> EVENT = EventFactory.createArrayBacked(
+        SwapHandsCallback.class,
         (listeners) -> (player, mainHandStack, offHandStack) -> {
             for (SwapHandsCallback listener : listeners) {
                 ActionResult result = listener.swap(player, mainHandStack, offHandStack);

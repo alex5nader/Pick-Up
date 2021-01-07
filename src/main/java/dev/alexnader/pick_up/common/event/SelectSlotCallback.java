@@ -6,7 +6,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 
 public interface SelectSlotCallback {
-    Event<SelectSlotCallback> EVENT = EventFactory.createArrayBacked(SelectSlotCallback.class,
+    Event<SelectSlotCallback> EVENT = EventFactory.createArrayBacked(
+        SelectSlotCallback.class,
         (listeners) -> (player, slot) -> {
             for (SelectSlotCallback listener : listeners) {
                 ActionResult result = listener.selectSlot(player, slot);

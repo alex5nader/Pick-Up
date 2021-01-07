@@ -26,14 +26,15 @@ import javax.annotation.Nullable;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
-    @Shadow @Nullable public ClientPlayerEntity player;
+    @Shadow
+    public @Nullable ClientPlayerEntity player;
 
     @Redirect(
         method = "handleInputEvents",
         at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V", ordinal = 0),
         slice = @Slice(from = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;keySwapHands:Lnet/minecraft/client/options/KeyBinding;"))
     )
-     void fireSwapHandsCallback(ClientPlayNetworkHandler clientPlayNetworkHandler, Packet<?> packet) {
+    void fireSwapHandsCallback(ClientPlayNetworkHandler clientPlayNetworkHandler, Packet<?> packet) {
         //noinspection ConstantConditions // should not be null when handling input events
         ActionResult result = SwapHandsCallback.EVENT.invoker().swap(player, player.getStackInHand(Hand.MAIN_HAND), player.getStackInHand(Hand.OFF_HAND));
 

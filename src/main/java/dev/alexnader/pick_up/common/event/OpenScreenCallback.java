@@ -6,7 +6,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 
 public interface OpenScreenCallback {
-    Event<OpenScreenCallback> BEFORE_OPEN = EventFactory.createArrayBacked(OpenScreenCallback.class,
+    Event<OpenScreenCallback> BEFORE_OPEN = EventFactory.createArrayBacked(
+        OpenScreenCallback.class,
         (listeners) -> (player) -> {
             for (OpenScreenCallback listener : listeners) {
                 ActionResult result = listener.open(player);

@@ -13,11 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin {
-    @Shadow @Final public PlayerInventory inventory;
+    @Shadow
+    public @Final PlayerInventory inventory;
 
     @Inject(method = "dropSelectedItem", at = @At("HEAD"), cancellable = true)
     void fireDropSelectedItemCallback(boolean dropEntireStack, CallbackInfoReturnable<Boolean> cir) {
-        ActionResult result = DropSelectedItemCallback.EVENT.invoker().drop((PlayerEntity) (Object) this, this.inventory.getStack(this.inventory.selectedSlot), dropEntireStack);
+        ActionResult result = DropSelectedItemCallback.EVENT.invoker()
+            .drop((PlayerEntity) (Object) this, this.inventory.getStack(this.inventory.selectedSlot), dropEntireStack);
 
         if (result != ActionResult.PASS) {
             cir.setReturnValue(false);

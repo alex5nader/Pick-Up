@@ -15,7 +15,9 @@ import static dev.alexnader.pick_up.common.PickUp.META;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class PickUpCommands {
-    public LiteralArgumentBuilder<ServerCommandSource> DISCARD = literal(META.id("discard").toString()).executes(PickUpCommands::discard);
+    public LiteralArgumentBuilder<ServerCommandSource> DISCARD =
+        literal(META.id("discard").toString())
+            .executes(PickUpCommands::discard);
 
     private static int discard(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
