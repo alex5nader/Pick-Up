@@ -2,9 +2,15 @@ package dev.alexnader.pick_up.common;
 
 import dev.alexnader.pick_up.common.item.HeldBlockItem;
 import dev.alexnader.pick_up.common.item.HeldEntityItem;
+import dev.alexnader.pick_up.mixinterface.DenylistSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 import static dev.alexnader.pick_up.common.PickUp.META;
 
@@ -14,6 +20,13 @@ public class PickUpItems extends Registrar<Item> {
 
     public PickUpItems() {
         super(Registry.ITEM);
+        register(new Item(new Item.Settings()) {
+            @Override
+            public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+                System.out.println(((DenylistSource) world).denylist());
+                return super.use(world, user, hand);
+            }
+        }, META.id("test"));
     }
 
     public boolean isHeldItem(ItemConvertible item) {

@@ -2,5 +2,6 @@
   "pick_up.holding": "Holding %s",
   "pick_up.invalid": "Invalid Held Item",
   "pick_up.command.discard.not_holding": "You're not holding anything!",
-  "pick_up.command.discard.success": "Discarded %s."
+  "pick_up.command.discard.success": "Discarded %s.",
+  "pick_up.message.error.placing": "Pick Up encountered an error while placing that item. Please open an issue with the below link and attach your game's logs."
 }

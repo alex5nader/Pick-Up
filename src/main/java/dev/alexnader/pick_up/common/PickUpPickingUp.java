@@ -1,9 +1,9 @@
 package dev.alexnader.pick_up.common;
 
-import dev.alexnader.pick_up.api.PickUpDenylist;
 import dev.alexnader.pick_up.common.item.HeldBlockItem;
 import dev.alexnader.pick_up.common.item.HeldEntityItem;
 import dev.alexnader.pick_up.mixinterface.BlockBreakRestrictable;
+import dev.alexnader.pick_up.mixinterface.DenylistSource;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
@@ -30,7 +30,7 @@ public class PickUpPickingUp {
     }
 
     public static ActionResult tryPickUpEntity(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hit) {
-        if (!canPickUp(player) || PickUpDenylist.INSTANCE.isDenied(entity)) {
+        if (!canPickUp(player) || ((DenylistSource) world).denylist().isDenied(entity)) {
             return ActionResult.PASS;
         }
 
@@ -56,7 +56,7 @@ public class PickUpPickingUp {
             return ActionResult.PASS;
         }
 
-        if (!canPickUp(player) || PickUpDenylist.INSTANCE.isDenied(state)) {
+        if (!canPickUp(player) || ((DenylistSource) world).denylist().isDenied(state)) {
             return ActionResult.PASS;
         }
         if (!((BlockBreakRestrictable) player).canBreakBlock(world, pos)) {

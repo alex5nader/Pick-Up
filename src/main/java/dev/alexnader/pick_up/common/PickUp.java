@@ -1,24 +1,18 @@
 package dev.alexnader.pick_up.common;
 
-import dev.alexnader.pick_up.api.PickUpDenylist;
-import dev.alexnader.pick_up.api.PickUpEntrypoint;
 import dev.alexnader.pick_up.common.event.DropSelectedItemCallback;
 import dev.alexnader.pick_up.common.event.OpenScreenCallback;
 import dev.alexnader.pick_up.common.event.SelectSlotCallback;
 import dev.alexnader.pick_up.common.event.SwapHandsCallback;
+import dev.alexnader.pick_up.mixinterface.DenylistSource;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.CustomValue;
-import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class PickUp implements ModInitializer {
     public static PickUpMeta META;
@@ -31,41 +25,14 @@ public class PickUp implements ModInitializer {
         ITEMS = new PickUpItems();
         COMMANDS = new PickUpCommands();
 
-        for (PickUpEntrypoint entrypoint : FabricLoader.getInstance()
-            .getEntrypoints(META.NAMESPACE, PickUpEntrypoint.class)) {
-            entrypoint.doPickUpRelatedThings();
-        }
-
-        initDenylist();
         registerInteractionBlockers();
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ((DenylistSource) server).denylist().sendToPlayer(handler.player));
 
         CommandRegistrationCallback.EVENT.register((dispatcher, isDedi) -> dispatcher.register(COMMANDS.DISCARD));
 
         UseEntityCallback.EVENT.register(PickUpPickingUp::tryPickUpEntity);
         UseBlockCallback.EVENT.register(PickUpPickingUp::tryPickUpBlock);
-    }
-
-    private void initDenylist() {
-        for (ModContainer mod : FabricLoader.getInstance().getAllMods()) {
-            ModMetadata meta = mod.getMetadata();
-            if (!meta.containsCustomValue(META.NAMESPACE)) {
-                continue;
-            }
-
-            CustomValue.CvObject pickUpData = meta.getCustomValue(META.NAMESPACE).getAsObject();
-
-            if (pickUpData.containsKey("denied_blocks")) {
-                for (CustomValue deniedBlock : pickUpData.get("denied_blocks").getAsArray()) {
-                    PickUpDenylist.INSTANCE.deny(Registry.BLOCK.get(new Identifier(deniedBlock.getAsString())));
-                }
-            }
-
-            if (pickUpData.containsKey("denied_entities")) {
-                for (CustomValue deniedEntity : pickUpData.get("denied_entities").getAsArray()) {
-                    PickUpDenylist.INSTANCE.deny(Registry.ENTITY_TYPE.get(new Identifier(deniedEntity.getAsString())));
-                }
-            }
-        }
     }
 
     private void registerInteractionBlockers() {

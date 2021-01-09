@@ -1,8 +1,10 @@
 package dev.alexnader.pick_up.mixin.client;
 
+import dev.alexnader.pick_up.common.Denylist;
 import dev.alexnader.pick_up.common.event.OpenScreenCallback;
 import dev.alexnader.pick_up.common.event.SelectSlotCallback;
 import dev.alexnader.pick_up.common.event.SwapHandsCallback;
+import dev.alexnader.pick_up.mixinterface.RemoteDenylist;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -10,6 +12,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import org.objectweb.asm.Opcodes;
@@ -25,7 +28,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.annotation.Nullable;
 
 @Mixin(MinecraftClient.class)
-public class MinecraftClientMixin {
+public class MinecraftClientMixin implements RemoteDenylist {
+    @Unique
+    private @Nullable Denylist denylist;
+
+    @Override
+    public @Nullable Denylist denylist() {
+        return denylist;
+    }
+
+    @Override
+    public void receiveDenylist(PacketByteBuf buf) {
+        denylist = Denylist.fromBuf(buf);
+    }
+
     @Shadow
     public @Nullable ClientPlayerEntity player;
 

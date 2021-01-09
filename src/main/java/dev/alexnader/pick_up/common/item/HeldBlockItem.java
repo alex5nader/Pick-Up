@@ -1,23 +1,32 @@
 package dev.alexnader.pick_up.common.item;
 
+import dev.alexnader.pick_up.mixinterface.ServerDenylist;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
 import static dev.alexnader.pick_up.common.PickUp.META;
+import static dev.alexnader.pick_up.common.Util.linkTo;
 
 public class HeldBlockItem extends HeldItem {
     public HeldBlockItem(Settings settings) {
@@ -45,13 +54,25 @@ public class HeldBlockItem extends HeldItem {
         ItemStack stack = usage.getStack();
         ItemPlacementContext placement = new ItemPlacementContext(usage);
 
-        if (placement.canPlace()) {
-            BlockState state = getState(stack);
-            BlockItem item = (BlockItem) state.getBlock().asItem();
+        if (!placement.canPlace()) {
+            return super.useOnBlock(usage);
+        }
 
-            ActionResult result = item.place(placement);
+        PlayerEntity user = usage.getPlayer();
+        if (user != null) {
+            user.inventory.removeStack(user.inventory.selectedSlot);
+        }
+
+        BlockState state = getState(stack);
+
+        Item cachedItem = state.getBlock().asItem();
+
+        // ideal case, everything is good
+        if (cachedItem instanceof BlockItem) {
+            BlockItem blockItem = (BlockItem) cachedItem;
+            ActionResult result = blockItem.place(placement);
             if (result.isAccepted()) {
-                ItemPlacementContext itemCtx = item.getPlacementContext(placement);
+                ItemPlacementContext itemCtx = blockItem.getPlacementContext(placement);
                 //noinspection ConstantConditions // itemCtx should be non-null if result is accepted
                 BlockPos pos = itemCtx.getBlockPos();
                 BlockEntity entity = world.getBlockEntity(pos);
@@ -64,14 +85,67 @@ public class HeldBlockItem extends HeldItem {
                 entity.fromTag(world.getBlockState(pos), entityTag);
             }
 
-            PlayerEntity user = usage.getPlayer();
-            if (user != null) {
-                user.inventory.removeStack(user.inventory.selectedSlot);
-            }
-
             return result;
         }
-        return super.useOnBlock(usage);
+
+        // something is wrong
+        if (!world.isClient) {
+            ServerDenylist server = (ServerDenylist) ((ServerWorld) world).getServer();
+            server.denylist().deny(state.getBlock());
+            server.denylist().save();
+            server.sendDenylistToPlayers();
+
+            if (user != null) {
+                user.sendMessage(
+                    new TranslatableText("pick_up.message.error.placing")
+                        .setStyle(Style.EMPTY.withFormatting(Formatting.RED)),
+                    false
+                );
+                user.sendMessage(linkTo("https://github.com/alex5nader/Pick-Up/issues/new"), false);
+            }
+        }
+
+        // still have an item, just try to use it
+        if (cachedItem != null) {
+            META.LOGGER.warn("`{}`'s item, `{}`, is not a proper BlockItem. Denylisting it.", Registry.BLOCK.getId(state.getBlock()), Registry.ITEM.getId(cachedItem));
+
+            ActionResult result = cachedItem.useOnBlock(usage);
+
+            BlockPos pos = placement.getBlockPos();
+            BlockState oldState = world.getBlockState(pos);
+
+            // useOnBlock may have not actually placed something
+            if (!Objects.equals(world.getBlockState(pos), oldState)) {
+                CompoundTag entityTag = stack.getSubTag("entity");
+                //noinspection ConstantConditions // .entity is required
+                entityTag.putInt("x", pos.getX());
+                entityTag.putInt("y", pos.getY());
+                entityTag.putInt("z", pos.getZ());
+                BlockEntity entity = BlockEntity.createFromTag(state, entityTag);
+                world.setBlockEntity(pos, entity);
+
+                return result;
+            }
+        }
+
+        // everything is broken, just place the BlockState and BlockEntity directly.
+        if (cachedItem == null) {
+            META.LOGGER.warn("Failed to get an item for `{}`. Denylisting it.", Registry.BLOCK.getId(state.getBlock()));
+        }
+
+        BlockPos pos = placement.getBlockPos();
+        world.setBlockState(pos, state);
+
+        CompoundTag entityTag = stack.getSubTag("entity");
+        //noinspection ConstantConditions // .entity is required
+        entityTag.putInt("x", pos.getX());
+        entityTag.putInt("y", pos.getY());
+        entityTag.putInt("z", pos.getZ());
+        BlockEntity entity = world.getBlockEntity(pos);
+        //noinspection ConstantConditions // entity should be non-null because HeldBlockItem always holds block entities
+        entity.fromTag(state, entityTag);
+
+        return ActionResult.success(world.isClient);
     }
 
     @Override
