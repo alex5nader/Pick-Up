@@ -164,7 +164,7 @@ public class Denylist {
             })
             .filter(id -> {
                 // containsId is client-only :(
-                if (!id.equals(registry.getId(registry.get(id)))) {
+                if (!registry.getOrEmpty(id).isPresent()) {
                     META.LOGGER.warn("Invalid denylist entry in `{}`: `{}`", path, id);
                     return false;
                 } else {
