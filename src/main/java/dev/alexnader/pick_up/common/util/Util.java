@@ -7,6 +7,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 public class Util {
     private Util() {
@@ -20,5 +22,9 @@ public class Util {
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.link.open")))
                 .withFormatting(Formatting.UNDERLINE)
             );
+    }
+
+    public static Vec3d toVec3d(Vec3i vec) {
+        return new Vec3d(vec.getX(), vec.getY(), vec.getZ());
     }
 }

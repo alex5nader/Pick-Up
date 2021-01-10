@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
 import static dev.alexnader.pick_up.common.PickUp.META;
+import static dev.alexnader.pick_up.common.util.Util.toVec3d;
 
 public class HeldEntityItem extends HeldItem {
     public HeldEntityItem(Settings settings) {
@@ -60,17 +61,20 @@ public class HeldEntityItem extends HeldItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext usage) {
-        //TODO entities can spawn in walls when used on side of block
         World world = usage.getWorld();
         ItemStack stack = usage.getStack();
         ItemPlacementContext placement = new ItemPlacementContext(usage);
 
         if (placement.canPlace()) {
-            Vec3d pos = placement.getHitPos();
+            Vec3d pos = toVec3d(placement.getBlockPos()).add(0.5, 0, 0.5);
 
             Entity entity = getEntity(stack, world);
-
             entity.updatePosition(pos.getX(), pos.getY(), pos.getZ());
+
+            if (entity.isInsideWall()) {
+                return ActionResult.FAIL;
+            }
+
             world.spawnEntity(entity);
 
             PlayerEntity user = usage.getPlayer();
