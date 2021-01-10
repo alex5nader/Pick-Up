@@ -95,6 +95,16 @@ tasks.getByName<ProcessResources>("processResources") {
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
 
 publishing {
+    repositories {
+        maven(url = "maven.pkg.github.com/alex5nader/${PickUp.name}") {
+            name = "GitHub_Packages"
+            credentials {
+                username = "alex5nader"
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+
     publications.create<MavenPublication>("maven") {
         artifactId = PickUp.version
 
