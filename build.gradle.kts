@@ -9,8 +9,6 @@ import com.matthewprenger.cursegradle.CurseRelation
 import com.matthewprenger.cursegradle.Options
 
 plugins {
-    `kotlin-dsl`
-
     java
     `java-library`
     id("fabric-loom").version(Fabric.Loom.version)
