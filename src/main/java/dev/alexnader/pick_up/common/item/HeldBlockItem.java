@@ -1,6 +1,8 @@
 package dev.alexnader.pick_up.common.item;
 
-import dev.alexnader.pick_up.mixinterface.ServerDenylist;
+import dev.alexnader.pick_up.common.PickUpConfig;
+import dev.alexnader.pick_up.common.PickUpMeta;
+import dev.alexnader.server_config.api.ServerConfigProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,7 +27,7 @@ import net.minecraft.world.World;
 import java.util.Objects;
 
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
-import static dev.alexnader.pick_up.common.PickUp.META;
+import static dev.alexnader.pick_up.common.PickUpMeta.LOGGER;
 import static dev.alexnader.pick_up.common.util.Util.linkTo;
 
 public class HeldBlockItem extends HeldItem {
@@ -90,10 +92,10 @@ public class HeldBlockItem extends HeldItem {
 
         // something is wrong
         if (!world.isClient) {
-            ServerDenylist server = (ServerDenylist) ((ServerWorld) world).getServer();
-            server.denylist().deny(state.getBlock());
-            server.denylist().save();
-            server.sendDenylistToPlayers();
+            ServerConfigProvider server = (ServerConfigProvider) ((ServerWorld) world).getServer();
+            server.config(PickUpConfig.BLOCK_DENYLIST).deny(state.getBlock());
+            server.save(PickUpConfig.BLOCK_DENYLIST);
+            server.syncToAll(PickUpConfig.BLOCK_DENYLIST);
 
             if (user != null) {
                 user.sendMessage(
@@ -107,7 +109,7 @@ public class HeldBlockItem extends HeldItem {
 
         // still have an item, just try to use it
         if (cachedItem != null) {
-            META.LOGGER.warn("`{}`'s item, `{}`, is not a proper BlockItem. Denylisting it.", Registry.BLOCK.getId(state.getBlock()), Registry.ITEM.getId(cachedItem));
+            LOGGER.warn("`{}`'s item, `{}`, is not a proper BlockItem. Denylisting it.", Registry.BLOCK.getId(state.getBlock()), Registry.ITEM.getId(cachedItem));
 
             ActionResult result = cachedItem.useOnBlock(usage);
 
@@ -130,7 +132,7 @@ public class HeldBlockItem extends HeldItem {
 
         // everything is broken, just place the BlockState and BlockEntity directly.
         if (cachedItem == null) {
-            META.LOGGER.warn("Failed to get an item for `{}`. Denylisting it.", Registry.BLOCK.getId(state.getBlock()));
+            LOGGER.warn("Failed to get an item for `{}`. Denylisting it.", Registry.BLOCK.getId(state.getBlock()));
         }
 
         BlockPos pos = placement.getBlockPos();
@@ -157,11 +159,11 @@ public class HeldBlockItem extends HeldItem {
     public String getHeldTranslationKey(ItemStack stack) {
         CompoundTag stateTag = stack.getSubTag("state");
         if (stateTag == null) {
-            return META.INVALID_KEY;
+            return PickUpMeta.INVALID_KEY;
         }
         String name = stateTag.getString("Name");
         if ("".equals(name)) {
-            return META.INVALID_KEY;
+            return PickUpMeta.INVALID_KEY;
         }
         return Registry.BLOCK.get(new Identifier(name)).getTranslationKey();
     }

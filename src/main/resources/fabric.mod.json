@@ -26,6 +26,9 @@
     ],
     "client": [
       "dev.alexnader.pick_up.client.PickUpClient"
+    ],
+    "server_config": [
+      "dev.alexnader.pick_up.common.PickUpConfig"
     ]
   },
   "mixins": [

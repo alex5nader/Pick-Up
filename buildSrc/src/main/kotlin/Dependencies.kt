@@ -48,11 +48,13 @@ object Minecraft : Dependency("com.mojang", "minecraft", "1.16.4") {
     val tag = "mc" + version.split(".").slice(0..1).joinToString()
 }
 
+val ServerConfig = Dependency("dev.alexnader", "server-config", "0.3")
+
 val ModMenu = Dependency("io.github.prospector", "modmenu", "1.14.9+build.14")
 
 val Gson = Dependency("com.google.code.gson", "gson", "2.8.6")
 val Jsr305 = Dependency("com.google.code.findbugs", "jsr305", "3.0.2")
 
-val jijDeps = listOf<Dependency>()
+val jijDeps = listOf(ServerConfig)
 val deps = listOf(Fabric.loader, Fabric.api) + jijDeps
 val runtimeDeps = listOf(ModMenu)

@@ -1,5 +1,6 @@
 package dev.alexnader.pick_up.common.item;
 
+import dev.alexnader.pick_up.common.PickUpMeta;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -14,7 +15,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
-import static dev.alexnader.pick_up.common.PickUp.META;
 import static dev.alexnader.pick_up.common.util.Util.toVec3d;
 
 public class HeldEntityItem extends HeldItem {
@@ -91,10 +91,10 @@ public class HeldEntityItem extends HeldItem {
     public String getHeldTranslationKey(ItemStack stack) {
         CompoundTag entityTag = stack.getSubTag("entity");
         if (entityTag == null) {
-            return META.INVALID_KEY;
+            return PickUpMeta.INVALID_KEY;
         }
         return EntityType.fromTag(entityTag)
             .map(EntityType::getTranslationKey)
-            .orElse(META.INVALID_KEY);
+            .orElse(PickUpMeta.INVALID_KEY);
     }
 }

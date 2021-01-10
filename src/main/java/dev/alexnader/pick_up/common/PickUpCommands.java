@@ -11,12 +11,12 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
-import static dev.alexnader.pick_up.common.PickUp.META;
+import static dev.alexnader.pick_up.common.PickUpMeta.id;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class PickUpCommands {
     public LiteralArgumentBuilder<ServerCommandSource> DISCARD =
-        literal(META.id("discard").toString())
+        literal(id("discard").toString())
             .executes(PickUpCommands::discard);
 
     private static int discard(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

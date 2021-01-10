@@ -6,15 +6,12 @@
     "BlockEntityAccess",
     "ItemStackMixin",
     "PlayerEntityMixin",
-    "server.MinecraftServerMixin",
     "server.ServerPlayerEntityMixin",
-    "server.ServerPlayNetworkHandlerMixin",
-    "server.ServerWorldMixin"
+    "server.ServerPlayNetworkHandlerMixin"
   ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.ClientPlayerEntityMixin",
-    "client.ClientWorldMixin",
     "client.MinecraftClientMixin",
     "client.PlayerInventoryClientMixin"
   ],

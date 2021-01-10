@@ -27,9 +27,23 @@ configure<JavaPluginConvention> {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+val apiKeys by lazy {
+    Properties().apply { load(file("apiKeys.properties").inputStream()) }
+}
+
 repositories {
     mavenLocal { name = "Maven Local" }
     maven(url = "https://maven.fabricmc.net/") { name = "Fabric" }
+    maven(url = "https://maven.pkg.github.com/alex5nader/Server-Config") {
+        name = "Server Config"
+        content {
+            includeGroup("dev.alexnader")
+        }
+        credentials {
+            username = "alex5nader"
+            password = apiKeys.getProperty("githubPackagesToken")
+        }
+    }
     maven(url = "https://cursemaven.com/") {
         name = "Curse Maven"
         content {
@@ -113,10 +127,6 @@ publishing {
             builtBy(remapJar)
         }
     }
-}
-
-val apiKeys by lazy {
-    Properties().apply { load(file("apiKeys.properties").inputStream()) }
 }
 
 val publishModrinth = tasks.create<TaskModrinthUpload>("publishModrinth") {
