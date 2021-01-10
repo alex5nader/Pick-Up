@@ -26,7 +26,7 @@ import java.util.Objects;
 
 import static dev.alexnader.pick_up.common.PickUp.ITEMS;
 import static dev.alexnader.pick_up.common.PickUp.META;
-import static dev.alexnader.pick_up.common.Util.linkTo;
+import static dev.alexnader.pick_up.common.util.Util.linkTo;
 
 public class HeldBlockItem extends HeldItem {
     public HeldBlockItem(Settings settings) {

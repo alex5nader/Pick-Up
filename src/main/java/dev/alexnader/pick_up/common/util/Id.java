@@ -1,4 +1,4 @@
-package dev.alexnader.pick_up.common;
+package dev.alexnader.pick_up.common.util;
 
 import net.minecraft.util.Identifier;
 

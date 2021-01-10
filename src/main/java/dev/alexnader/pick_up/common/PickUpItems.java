@@ -2,6 +2,8 @@ package dev.alexnader.pick_up.common;
 
 import dev.alexnader.pick_up.common.item.HeldBlockItem;
 import dev.alexnader.pick_up.common.item.HeldEntityItem;
+import dev.alexnader.pick_up.common.util.Id;
+import dev.alexnader.pick_up.common.util.Registrar;
 import dev.alexnader.pick_up.mixinterface.DenylistSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
