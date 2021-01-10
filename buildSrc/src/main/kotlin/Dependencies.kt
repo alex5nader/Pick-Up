@@ -36,7 +36,7 @@ object Fabric {
     val api = Dependency("net.fabricmc.fabric-api", "fabric-api", "0.29.3+1.16")
 }
 
-object PickUp : Dependency("dev.alexnader", "Pick-Up", "0") {
+object PickUp : Dependency("dev.alexnader", "Pick-Up", "0.1") {
     const val modId = "pick_up"
     const val prettyName = "Pick Up"
 
